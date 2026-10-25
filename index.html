@@ -3,696 +3,620 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Raulus Latinus - Premium Edition</title>
+    <title>Raulus Latinus - Imperial Black Edition</title>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Fonts (Inter for modern sleek look) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* === DESIGN SYSTEM & VARIABLES === */
+        /* === COMPRESSBASE STYLE DESIGN SYSTEM === */
         :root {
-            --bg-grad: linear-gradient(135deg, #fdfbf7 0%, #f3eee3 100%);
-            --text-main: #2c2416;
-            --text-muted: #78716c;
-            --surface: #ffffff;
-            --surface-hover: #f9fafb;
-            --border: #e7e5e4;
+            --bg-base: #09090b;       /* Deep Black */
+            --bg-card: #121214;       /* Dark Gray Card */
+            --bg-card-hover: #18181b;
+            --border: #27272a;        /* Subtle Gray Border */
             
-            --primary: #8b5cf6;
-            --primary-shadow: #6d28d9;
-            --success: #10b981;
-            --success-shadow: #047857;
+            --text-main: #ffffff;     /* Pure White */
+            --text-muted: #a1a1aa;    /* Light Gray */
+            
+            --accent: #facc15;        /* Bold Gold/Yellow */
+            --accent-glow: rgba(250, 204, 21, 0.2);
+            --accent-dark: #ca8a04;
+            
+            --success: #22c55e;
             --danger: #ef4444;
-            --danger-shadow: #b91c1c;
-            --warning: #f59e0b;
             
-            --nav-width: 250px;
-            --topbar-height: 70px;
-            --bottom-nav-height: 65px;
-        }
-
-        body.dark-mode {
-            --bg-grad: linear-gradient(135deg, #13151a 0%, #1e222f 100%);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --surface: #1e293b;
-            --surface-hover: #334155;
-            --border: #334155;
-            
-            --primary: #a78bfa;
-            --primary-shadow: #6d28d9;
+            --topbar-height: 80px;
+            --bottom-nav-height: 70px;
         }
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: var(--bg-grad);
+            background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Watermark */
+        /* Subtle Starry/Particle Background (Pure CSS) */
         body::before {
-            content: "SPQR · ROMA";
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, var(--accent), rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Huge Watermark */
+        .watermark {
             position: fixed;
             top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-25deg);
-            font-family: 'Cinzel', serif;
-            font-size: clamp(4rem, 15vw, 10rem);
+            transform: translate(-50%, -50%);
+            font-size: clamp(4rem, 15vw, 12rem);
             font-weight: 900;
             color: var(--text-main);
-            opacity: 0.03;
+            opacity: 0.02;
             pointer-events: none;
             z-index: 0;
             white-space: nowrap;
+            letter-spacing: -0.05em;
         }
 
-        /* === LAYOUT === */
-        #app {
-            display: flex;
-            width: 100%;
-            z-index: 1;
-        }
-
-        /* Desktop Sidebar */
-        aside {
-            width: var(--nav-width);
-            background: var(--surface);
-            border-right: 2px solid var(--border);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
+        /* === TOP NAVIGATION (CompressBase Style) === */
+        header {
             position: fixed;
-            height: 100vh;
+            top: 0; left: 0; width: 100%;
+            height: var(--topbar-height);
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
             z-index: 50;
-            transition: background 0.3s, border 0.3s;
         }
 
-        .logo-container {
+        .logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 2.5rem;
-        }
-
-        .logo-container h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 1.4rem;
-            color: var(--primary);
-            line-height: 1.1;
-        }
-
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 1rem;
-            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
+        }
+        
+        .logo-icon {
+            background: var(--accent);
+            color: var(--bg-base);
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 1.2rem;
         }
 
-        .nav-btn:hover {
-            background: var(--surface-hover);
+        .logo-text {
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
         }
 
-        .nav-btn.active {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .nav-icon { font-size: 1.3rem; }
-
-        /* Main Content Area */
-        main {
-            flex-grow: 1;
-            margin-left: var(--nav-width);
+        .nav-links {
             display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            gap: 1.5rem;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        /* Topbar (Glassmorphism) */
-        header {
-            height: var(--topbar-height);
-            position: sticky;
-            top: 0;
-            background: rgba(var(--surface-rgb), 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 2px solid var(--border);
+        .nav-link {
+            background: none; border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover { color: var(--text-main); }
+        .nav-link.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .header-actions {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 0 2rem;
-            z-index: 40;
-        }
-
-        .stats-group {
-            display: flex;
             gap: 1rem;
         }
 
         .stat-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            background: var(--surface);
-            border: 2px solid var(--border);
+            font-size: 0.85rem; font-weight: 800;
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 20px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-        .stat-pill:hover { transform: translateY(-2px); }
-
-        .controls-group {
-            display: flex;
-            gap: 10px;
         }
 
-        /* Gamified 3D Buttons */
-        .btn-3d {
-            padding: 10px 20px;
-            border-radius: 14px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.1s;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 0 var(--primary-shadow);
-        }
-        .btn-primary:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 var(--primary-shadow);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-            box-shadow: 0 4px 0 var(--success-shadow);
-        }
-        .btn-success:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 var(--success-shadow);
-        }
-
-        .btn-icon-3d {
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            background: var(--surface);
-            border: 2px solid var(--border);
+        .btn-discord {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             color: var(--text-main);
-            box-shadow: 0 4px 0 var(--border);
-            border-radius: 12px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 8px;
+            cursor: pointer; transition: 0.2s;
         }
-        .btn-icon-3d:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 var(--border);
+        .btn-discord:hover { background: var(--border); }
+        .btn-discord .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+
+        /* === MAIN CONTENT === */
+        main {
+            margin-top: var(--topbar-height);
+            padding: 3rem 1rem;
+            flex-grow: 1;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* View Container */
-        .view-container {
-            padding: 2rem;
-            flex-grow: 1;
+        .view-section {
             display: none;
-            max-width: 800px;
-            margin: 0 auto;
             width: 100%;
+            max-width: 900px;
             animation: fadeIn 0.3s ease;
         }
-        .view-container.active { display: block; }
-        
+        .view-section.active { display: block; }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* === 50 LEVEL PATH === */
-        .path-wrapper {
-            position: relative;
-            padding: 3rem 0;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            gap: 40px;
+        /* Typography Styles */
+        .title-huge {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .title-huge span { color: var(--accent); }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            line-height: 1.5;
         }
 
-        /* Dotted line connecting levels */
+        /* === UI COMPONENTS === */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .btn-primary {
+            background: var(--text-main);
+            color: var(--bg-base);
+            border: none;
+            padding: 14px 24px;
+            font-size: 1rem; font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+        .btn-primary:hover {
+            background: var(--accent);
+        }
+
+        /* === 50 LEVEL PATH === */
+        .path-container {
+            display: flex;
+            flex-direction: column; /* 1 at TOP, 50 at BOTTOM */
+            align-items: center;
+            gap: 2.5rem;
+            position: relative;
+            padding: 2rem 0;
+        }
+
         .path-line {
             position: absolute;
-            top: 40px;
-            bottom: 40px;
-            left: 50%;
-            width: 6px;
-            background-image: repeating-linear-gradient(to bottom, var(--border) 0, var(--border) 10px, transparent 10px, transparent 20px);
+            top: 20px; bottom: 20px; left: 50%;
+            width: 2px;
+            background: var(--border);
             transform: translateX(-50%);
             z-index: 0;
         }
 
         .level-row {
-            position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            z-index: 1;
+            display: flex; justify-content: center; width: 100%; z-index: 1;
         }
 
         .level-node {
-            width: 75px;
-            height: 75px;
+            width: 65px; height: 65px;
             border-radius: 50%;
-            background: var(--surface);
-            border: 6px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 900;
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 900;
             color: var(--text-muted);
             cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-            box-shadow: 0 6px 0 var(--border);
-        }
-
-        .level-node:active:not(.locked) {
-            transform: translateY(6px);
-            box-shadow: 0 0 0 var(--border);
+            transition: 0.3s;
         }
 
         .level-node.completed {
-            background: var(--success);
-            border-color: #34d399;
-            color: white;
-            box-shadow: 0 6px 0 var(--success-shadow);
+            border-color: var(--text-main);
+            color: var(--text-main);
+            background: var(--bg-card);
         }
 
         .level-node.active-level {
-            background: var(--surface);
-            border-color: var(--primary);
-            color: var(--primary);
-            box-shadow: 0 6px 0 var(--primary-shadow), 0 0 20px rgba(139, 92, 246, 0.4);
-            animation: bounce 2s infinite;
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: scale(1.1);
         }
 
-        .level-node.locked {
-            opacity: 0.6;
-            background: #e2e8f0;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+        .level-node.locked { opacity: 0.4; cursor: not-allowed; }
+        .level-node.boss { width: 85px; height: 85px; font-size: 1.5rem; border-color: var(--accent-dark); }
+        .level-node.boss.completed { border-color: var(--accent); }
 
-        .dark-mode .level-node.locked {
-            background: #0f172a;
+        /* === QUIZ UI === */
+        .quiz-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-main);
+            font-size: 1.5rem;
+            font-weight: 800;
+            padding: 1rem 0;
+            margin-bottom: 1.5rem;
+            outline: none;
         }
+        .quiz-input:focus { border-color: var(--accent); }
+        .quiz-input::placeholder { color: #3f3f46; font-weight: 600; }
 
-        .boss-crown {
-            position: absolute;
-            top: -25px;
-            font-size: 1.8rem;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
-        }
+        .progress-bg { width: 100%; height: 6px; background: var(--border); border-radius: 10px; margin-bottom: 2rem; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.3s; }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
+        /* === TABLES / DICT === */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { font-weight: 800; color: var(--text-muted); padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; text-transform: uppercase; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 600; }
 
-        /* === RESPONSIVE DESIGN (MOBILE & IPAD) === */
-        
-        /* Bottom Navigation for Mobile */
+        /* === MOBILE BOTTOM NAV === */
         .bottom-nav {
             display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(9, 9, 11, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
             height: var(--bottom-nav-height);
-            background: var(--surface);
-            border-top: 2px solid var(--border);
             z-index: 50;
-            justify-content: space-around;
-            align-items: center;
-            padding: 0 10px;
-            padding-bottom: env(safe-area-inset-bottom); /* For iPhones */
         }
 
-        .bottom-nav-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 700;
-            background: none;
-            border: none;
-            flex: 1;
-            height: 100%;
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .bottom-nav { display: flex; justify-content: space-around; align-items: center; }
+            .nav-link { font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; border: none; }
+            .nav-link.active { border: none; color: var(--accent); }
+            main { padding-bottom: calc(var(--bottom-nav-height) + 2rem); }
+            .title-huge { font-size: 2.5rem; }
         }
 
-        .bottom-nav-btn.active {
-            color: var(--primary);
-        }
-        .bottom-nav-btn.active .nav-icon {
-            background: rgba(139, 92, 246, 0.15);
-            border-radius: 12px;
-            padding: 5px 15px;
-        }
-
-        @media (max-width: 850px) {
-            aside { display: none; }
-            main { margin-left: 0; padding-bottom: calc(var(--bottom-nav-height) + 15px); }
-            .bottom-nav { display: flex; }
-            
-            header { padding: 0 1rem; }
-            .stat-pill { padding: 6px 10px; font-size: 0.8rem; }
-            
-            /* Text in Topbar verstecken auf Handy */
-            .hide-mobile { display: none; }
-            
-            .level-node { width: 65px; height: 65px; font-size: 1.2rem; }
-        }
-
-        /* Modal Auth */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-card {
-            background: var(--surface); border: 2px solid var(--border);
-            border-radius: 24px; padding: 2rem; width: 90%; max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative;
-        }
-
+        /* Modal */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal.active { display: flex; }
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <!-- DESKTOP SIDEBAR -->
-        <aside id="desktop-nav">
-            <div class="logo-container">
-                <svg viewBox="0 0 24 24" width="32" fill="var(--primary)"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                <h1>RAULUS<br>LATINUS</h1>
-            </div>
-            
-            <nav class="nav-menu">
-                <button class="nav-btn active" onclick="switchView('levels', this)">
-                    <span class="nav-icon">🗺️</span> Pfad
-                </button>
-                <button class="nav-btn" onclick="switchView('avatar', this)">
-                    <span class="nav-icon">🛡️</span> Avatar
-                </button>
-                <button class="nav-btn" onclick="switchView('dict', this)">
-                    <span class="nav-icon">📖</span> Vokabeln
-                </button>
-            </nav>
-            
-            <div style="margin-top: auto;">
-                <button class="btn-3d btn-primary" style="width:100%" onclick="openAuth()">
-                    <span id="nav-user-icon">👤</span> <span id="nav-user-text">Profil</span>
-                </button>
-            </div>
-        </aside>
+    <div class="watermark">RAULUS</div>
 
-        <!-- MAIN AREA -->
-        <main>
-            <!-- TOPBAR -->
-            <header>
-                <div class="stats-group">
-                    <div class="stat-pill" style="color: var(--warning);">
-                        🔥 <span><span id="stat-streak">0</span> <span class="hide-mobile">Tage</span></span>
-                    </div>
-                    <div class="stat-pill" style="color: var(--primary);">
-                        ⚡ <span><span id="stat-xp">0</span> <span class="hide-mobile">XP</span></span>
-                    </div>
-                </div>
+    <!-- TOPBAR -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">RL</div>
+            <div class="logo-text">Raulus<br><span style="color:var(--accent);">Latinus</span></div>
+        </div>
 
-                <div class="controls-group">
-                    <button class="btn-3d btn-icon-3d" onclick="toggleSound()" title="Ton an/aus">
-                        <span id="sound-icon">🔊</span>
-                    </button>
-                    <button class="btn-3d btn-icon-3d" onclick="toggleDark()" title="Nachtmodus">
-                        🌙
-                    </button>
-                </div>
-            </header>
-
-            <!-- VIEW 1: LEVELS -->
-            <section id="view-levels" class="view-container active">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: var(--primary);">Imperium Viae</h2>
-                    <p style="color: var(--text-muted);">Erobere 50 Level und werde zum Legaten!</p>
-                </div>
-
-                <div class="path-wrapper">
-                    <div class="path-line"></div>
-                    <div id="level-nodes-container" style="width: 100%; display: flex; flex-direction: column-reverse; gap: 30px;">
-                        <!-- JS generated nodes -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- VIEW 2: AVATAR -->
-            <section id="view-avatar" class="view-container">
-                <h2 style="font-family: 'Cinzel', serif; text-align:center; margin-bottom: 2rem;">Dein Legionär</h2>
-                <div style="background: var(--surface); border: 2px solid var(--border); border-radius: 24px; padding: 2rem; text-align: center;">
-                    <div style="font-size: 6rem; margin-bottom: 1rem;">🏛️</div>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Schließe Boss-Level ab, um Rüstung freizuschalten.</p>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px;" id="inventory-grid">
-                        <!-- JS gen items -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- VIEW 3: DICT -->
-            <section id="view-dict" class="view-container">
-                <h2 style="font-family: 'Cinzel', serif; text-align:center; margin-bottom: 2rem;">Bibliothek</h2>
-                <div style="background: var(--surface); border: 2px solid var(--border); border-radius: 20px; overflow: hidden;">
-                    <p style="padding: 2rem; text-align: center; color: var(--text-muted);">Hier werden deine Vokabeln gesammelt...</p>
-                </div>
-            </section>
-
-        </main>
-        
-        <!-- MOBILE BOTTOM NAV -->
-        <nav class="bottom-nav">
-            <button class="bottom-nav-btn active" onclick="switchView('levels', this, true)">
-                <span class="nav-icon">🗺️</span> Pfad
-            </button>
-            <button class="bottom-nav-btn" onclick="switchView('avatar', this, true)">
-                <span class="nav-icon">🛡️</span> Avatar
-            </button>
-            <button class="bottom-nav-btn" onclick="switchView('dict', this, true)">
-                <span class="nav-icon">📖</span> Vokabeln
-            </button>
-            <button class="bottom-nav-btn" onclick="openAuth()">
-                <span class="nav-icon">👤</span> Profil
-            </button>
+        <nav class="nav-links">
+            <button class="nav-link active" onclick="nav('levels', this)">Pfad</button>
+            <button class="nav-link" onclick="nav('daily', this)">Daily Quiz</button>
+            <button class="nav-link" onclick="nav('test', this)">Test</button>
+            <button class="nav-link" onclick="nav('avatar', this)">Avatar</button>
+            <button class="nav-link" onclick="nav('dict', this)">Bibliothek</button>
         </nav>
-    </div>
+
+        <div class="header-actions">
+            <div class="stat-pill" style="color: var(--accent);">⚡ <span id="ui-xp">0</span> XP</div>
+            <div class="stat-pill" style="color: #fb923c;">🔥 <span id="ui-streak">0</span></div>
+            <button class="btn-discord" onclick="openAuth()">
+                <div class="dot" id="auth-dot"></div> <span id="auth-text">LOGIN</span>
+            </button>
+            <button class="btn-discord" style="padding: 8px; border-radius: 12px;" onclick="toggleSound()">
+                <span id="sound-icon">🔊</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- VIEW: LEVELS -->
+        <section id="view-levels" class="view-section active">
+            <h1 class="title-huge">BUILT AROUND<br><span>BETTER LEARNING</span></h1>
+            <p class="subtitle">Dein Vokabular sollte nicht langweilig sein. Raulus Latinus formt deinen Verstand für das echte Imperium.</p>
+            
+            <div class="path-container">
+                <div class="path-line"></div>
+                <div id="path-nodes" style="width:100%; display:flex; flex-direction:column; gap:30px;">
+                    <!-- JS greift ein -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: QUIZ ENGINE (Used for Daily, Test & Levels) -->
+        <section id="view-quiz" class="view-section">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 1rem;">
+                    <span id="quiz-mode-title" style="color:var(--accent); font-weight:800; text-transform:uppercase;">Übung</span>
+                    <span style="font-weight:700; color:var(--text-muted);" id="quiz-counter">1/15</span>
+                </div>
+                
+                <div class="progress-bg"><div class="progress-fill" id="quiz-progress"></div></div>
+
+                <div style="font-size: 2.5rem; font-weight: 900; text-align: center; margin: 2rem 0; text-transform: uppercase;" id="quiz-question">
+                    WORT
+                </div>
+
+                <input type="text" id="quiz-input-main" class="quiz-input" placeholder="Übersetzung eingeben..." autocomplete="off">
+                <input type="text" id="quiz-input-gram" class="quiz-input" placeholder="Genitiv & Genus (Optional)" autocomplete="off">
+
+                <button class="btn-primary" style="width:100%; margin-top: 1rem;" onclick="gameEngine.submit()">Antwort prüfen</button>
+
+                <div id="quiz-feedback" style="margin-top: 1.5rem; padding: 1rem; border-radius: 12px; font-weight: 800; text-align: center; display: none;"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: AVATAR -->
+        <section id="view-avatar" class="view-section">
+            <h1 class="title-huge">DEIN<br><span>LEGIONÄR</span></h1>
+            <div class="card" style="display:flex; flex-wrap:wrap; gap:2rem;">
+                <div style="flex:1; min-width: 250px; background:var(--bg-base); border:1px solid var(--border); border-radius: 16px; display:flex; justify-content:center; padding: 2rem;">
+                    <!-- SVG Roman Avatar -->
+                    <svg width="200" height="250" viewBox="0 0 100 130">
+                        <g id="av-body"><rect x="38" y="60" width="24" height="45" fill="#a1a1aa" rx="4"/><rect x="42" y="100" width="6" height="20" fill="#a1a1aa"/><rect x="52" y="100" width="6" height="20" fill="#a1a1aa"/></g>
+                        <path d="M35 60 L65 60 L60 95 L40 95 Z" fill="#ef4444"/> <!-- Base Tunic -->
+                        <circle cx="50" cy="40" r="16" fill="#fcd34d"/> <!-- Head -->
+                        
+                        <!-- Unlockables -->
+                        <rect id="item-belt" x="35" y="75" width="30" height="5" fill="#78350f" style="display:none;"/>
+                        <path id="item-toga" d="M35 60 Q50 80 65 65 Q55 95 38 90 Z" fill="#ffffff" opacity="0.9" style="display:none;"/>
+                        <path id="item-wreath" d="M34 32 Q50 22 66 32" stroke="#22c55e" stroke-width="3" fill="none" style="display:none;"/>
+                        <g id="item-gladius" style="display:none;"><rect x="70" y="50" width="3" height="35" fill="#d4d4d8"/><rect x="67" y="80" width="9" height="3" fill="#78350f"/></g>
+                    </svg>
+                </div>
+                <div style="flex:1; min-width: 250px; display:flex; flex-direction:column; gap:1rem;" id="inv-grid">
+                    <!-- JS Items -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: DICTIONARY -->
+        <section id="view-dict" class="view-section">
+            <h1 class="title-huge">DIE<br><span>BIBLIOTHEK</span></h1>
+            <div class="card" style="overflow-x:auto;">
+                <table>
+                    <thead><tr><th>Latein</th><th>Deutsch</th><th>Genitiv</th><th>Genus</th><th>Stammformen</th></tr></thead>
+                    <tbody id="dict-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-link active" onclick="nav('levels', this)">Pfad</button>
+        <button class="nav-link" onclick="nav('daily', this)">Daily</button>
+        <button class="nav-link" onclick="nav('test', this)">Test</button>
+        <button class="nav-link" onclick="nav('avatar', this)">Avatar</button>
+        <button class="nav-link" onclick="nav('dict', this)">Bib.</button>
+    </nav>
 
     <!-- AUTH MODAL -->
-    <div class="modal-overlay" id="auth-modal">
-        <div class="modal-card">
-            <button onclick="closeAuth()" style="position:absolute; right:20px; top:20px; background:none; border:none; font-size:1.5rem; color:var(--text-muted); cursor:pointer;">✕</button>
-            
-            <h2 style="font-family: 'Cinzel', serif; text-align:center; margin-bottom: 1.5rem;">Konto speichern</h2>
+    <div class="modal" id="auth-modal">
+        <div class="card" style="width: 100%; max-width: 400px; position:relative;">
+            <button onclick="document.getElementById('auth-modal').classList.remove('active')" style="position:absolute; right:20px; top:20px; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">✕</button>
+            <h2 style="font-weight:900; margin-bottom:1.5rem; font-size:1.5rem;">SYS / LOGIN</h2>
             
             <div id="auth-out">
-                <button class="btn-3d" style="width:100%; background:white; color:black; border:2px solid #e2e8f0; box-shadow: 0 4px 0 #cbd5e1; margin-bottom: 1rem;" onclick="loginGoogle()">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login
-                </button>
-                
-                <p style="text-align:center; font-size: 0.8rem; color: var(--text-muted); margin-bottom:1rem;">Kein Firebase? Der Fortschritt speichert trotzdem automatisch auf diesem Gerät!</p>
+                <button class="btn-primary" style="width:100%; margin-bottom:1rem; background:white; color:black;" onclick="loginGoogle()">Google Login</button>
+                <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Fortschritt wird lokal gespeichert.</p>
             </div>
-            
-            <div id="auth-in" style="display: none; text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
-                <h3 id="user-display" style="margin-bottom: 1.5rem;">User</h3>
-                <button class="btn-3d btn-primary" style="background:var(--danger); box-shadow: 0 4px 0 var(--danger-shadow); width:100%;" onclick="logout()">Abmelden</button>
+            <div id="auth-in" style="display:none; text-align:center;">
+                <h3 id="auth-email-display" style="margin-bottom:1rem;">User</h3>
+                <button class="btn-primary" style="width:100%; background:var(--danger);" onclick="logout()">Logout</button>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
-        /* === 1. FIREBASE CONFIG (Optional) === */
-        const firebaseConfig = {
-            // apiKey: "DEIN_KEY",
-            // authDomain: "dein-projekt.firebaseapp.com",
-        };
-        try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+        // === 1. DATEN & VOKABELN (Alle wieder drin!) ===
+        const RAW_VOCAB = `
+Lateinisch; Deutsch; Genitiv; Genus; Stammformen
+amare; lieben; amo; v; amavi, amatum
+vocare; rufen, nennen; voco; v; vocavi, vocatum
+cogitare; denken; cogito; v; cogitavi, cogitatum
+dare; geben; do; v; dedi, datum
+videre; sehen; video; v; vidi, visum
+habere; haben; habeo; v; habui, habitum
+monere; mahnen; moneo; v; monui, monitum
+audire; hören; audio; v; audivi, auditum
+venire; kommen; venio; v; veni, ventum
+mittere; schicken; mitto; v; misi, missum
+ducere; führen; duco; v; duxi, ductum
+capere; fassen; capio; v; cepi, captum
+facere; machen; facio; v; feci, factum
+esse; sein; sum; v; fui, -
+posse; können; possum; v; potui, -
+magnus; groß; magni; adj; -
+parvus; klein; parvi; adj; -
+bonus; gut; boni; adj; -
+puer; Junge; pueri; m; -
+puella; Mädchen; puellae; f; -
+vir; Mann; viri; m; -
+femina; Frau; feminae; f; -
+amicus; Freund; amici; m; -
+rex; König; regis; m; -
+urbs; Stadt; urbis; f; -
+aqua; Wasser; aquae; f; -
+vita; Leben; vitae; f; -
+dies; Tag; diei; m; -
+nox; Nacht; noctis; f; -
+bellum; Krieg; belli; n; -
+pax; Frieden; pacis; f; -
+arma; Waffen; armorum; n; -
+        `.trim();
 
-        /* === 2. STATE & AUDIO === */
-        let state = {
-            xp: 0, streak: 0, levels: [], items: [],
-            sound: true, dark: false
-        };
+        let vocabList = [];
+        let state = { xp: 0, streak: 0, levels: [], items: [], sound: true, lastDate: null };
 
-        const AudioFX = {
-            ctx: new (window.AudioContext || window.webkitAudioContext)(),
-            play(f, type, dur) {
-                if(!state.sound) return;
-                const o = this.ctx.createOscillator(), g = this.ctx.createGain();
-                o.type = type; o.frequency.setValueAtTime(f, this.ctx.currentTime);
-                g.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
-                o.connect(g); g.connect(this.ctx.destination);
-                o.start(); o.stop(this.ctx.currentTime + dur);
-            },
-            click() { this.play(400, 'sine', 0.1); }
-        };
+        const UNLOCKS = [
+            { id: 'belt', name: 'Ledergürtel', lv: 10 },
+            { id: 'toga', name: 'Weiße Toga', lv: 20 },
+            { id: 'wreath', name: 'Lorbeerkranz', lv: 30 },
+            { id: 'gladius', name: 'Gladius', lv: 40 }
+        ];
 
-        /* === 3. CORE LOGIC === */
-        function loadSave() {
-            const data = localStorage.getItem('raulus_premium');
-            if(data) state = JSON.parse(data);
-            if(state.dark) document.body.classList.add('dark-mode');
+        // === 2. INITIALISIERUNG & SPEICHER ===
+        function init() {
+            // Vocabs parsen
+            const lines = RAW_VOCAB.split('\n').slice(1);
+            vocabList = lines.map((l, i) => {
+                const p = l.split(';').map(x=>x.trim());
+                return { id: i+1, la: p[0], de: p[1], gen: p[2], gen_s: p[3], stamm: p[4] };
+            });
+
+            // State laden
+            const saved = localStorage.getItem('raulus_black');
+            if(saved) state = JSON.parse(saved);
+
+            // Streak Logic
+            const today = new Date().toDateString();
+            if(state.lastDate !== today) {
+                const yest = new Date(Date.now() - 86400000).toDateString();
+                if(state.lastDate !== yest && state.lastDate !== null) state.streak = 0;
+            }
+
             updateUI();
-            generateMap();
+            renderPath();
+            renderDict();
+            renderAvatar();
         }
 
         function save() {
-            localStorage.setItem('raulus_premium', JSON.stringify(state));
+            localStorage.setItem('raulus_black', JSON.stringify(state));
             updateUI();
         }
 
         function updateUI() {
-            document.getElementById('stat-xp').innerText = state.xp;
-            document.getElementById('stat-streak').innerText = state.streak;
+            document.getElementById('ui-xp').innerText = state.xp;
+            document.getElementById('ui-streak').innerText = state.streak;
             document.getElementById('sound-icon').innerText = state.sound ? '🔊' : '🔇';
+            renderAvatar();
         }
 
-        /* === 4. UI NAVIGATION === */
-        function switchView(id, btnElement, isMobile = false) {
+        // === 3. AUDIO (Beibehalten) ===
+        const AudioFX = {
+            ctx: null,
+            play(f, t, d) {
+                if(!state.sound) return;
+                if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                o.type = t; o.frequency.setValueAtTime(f, this.ctx.currentTime);
+                g.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + d);
+                o.connect(g); g.connect(this.ctx.destination);
+                o.start(); o.stop(this.ctx.currentTime + d);
+            },
+            correct() { this.play(500,'sine',0.1); setTimeout(()=>this.play(700,'sine',0.2), 100); },
+            wrong() { this.play(150,'sawtooth',0.3); },
+            click() { this.play(400,'sine',0.05); }
+        };
+
+        // === 4. NAVIGATION ===
+        function nav(id, btn) {
             AudioFX.click();
-            
-            // Verstecke alle Views
-            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-            // Zeige Ziel View
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + id).classList.add('active');
             
-            // Buttons updaten
-            const query = isMobile ? '.bottom-nav-btn' : '.nav-btn';
-            document.querySelectorAll(query).forEach(b => b.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
+            // Highlight Buttons
+            document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
             
-            // Synchronisiere andere Leiste
-            if(isMobile) {
-                const dtBtns = document.querySelectorAll('.nav-btn');
-                if(id === 'levels') dtBtns[0].classList.add('active');
-                if(id === 'avatar') dtBtns[1].classList.add('active');
-                if(id === 'dict') dtBtns[2].classList.add('active');
-            } else {
-                const mbBtns = document.querySelectorAll('.bottom-nav-btn');
-                if(id === 'levels') mbBtns[0].classList.add('active');
-                if(id === 'avatar') mbBtns[1].classList.add('active');
-                if(id === 'dict') mbBtns[2].classList.add('active');
-            }
+            // Sync Top & Bottom Nav
+            const allLinks = Array.from(document.querySelectorAll('.nav-link'));
+            allLinks.forEach(l => { if(l.innerText === btn.innerText) l.classList.add('active'); });
+
+            if(id === 'daily') gameEngine.start('daily', 15);
+            if(id === 'test') gameEngine.start('test', 15);
         }
 
-        /* === 5. MAP GENERATION (Der Zick-Zack Pfad) === */
-        function generateMap() {
-            const container = document.getElementById('level-nodes-container');
+        // === 5. RENDER LOGIK ===
+        function renderPath() {
+            const container = document.getElementById('path-nodes');
             container.innerHTML = '';
-            
-            const maxLevel = 50;
             const currentLv = state.levels.length + 1;
 
-            for(let i = 1; i <= maxLevel; i++) {
+            // Schleife von 1 bis 50 (1 oben, 50 unten)
+            for(let i = 1; i <= 50; i++) {
                 const row = document.createElement('div');
                 row.className = 'level-row';
-                
-                // Zick-Zack Logik für schöne Kurven (Sinus-Welle)
-                const offset = Math.sin(i * 0.6) * 60; 
-                row.style.transform = `translateX(${offset}px)`;
+                row.style.transform = `translateX(${Math.sin(i * 0.5) * 50}px)`; // Zick-Zack
 
                 const node = document.createElement('div');
-                
                 const isCompleted = state.levels.includes(i);
                 const isActive = i === currentLv;
                 const isBoss = i % 10 === 0;
 
-                let classes = 'level-node btn-3d ';
-                if(isCompleted) classes += 'completed';
-                else if(isActive) classes += 'active-level';
-                else classes += 'locked';
-
-                node.className = classes;
+                node.className = `level-node ${isCompleted ? 'completed' : ''} ${isActive ? 'active-level' : ''} ${!isCompleted && !isActive ? 'locked' : ''} ${isBoss ? 'boss' : ''}`;
                 node.innerText = i;
 
-                if(isBoss) {
-                    node.style.width = '90px';
-                    node.style.height = '90px';
-                    node.style.borderColor = 'var(--danger)';
-                    if(isCompleted) node.style.borderColor = '#34d399';
-                    
-                    const crown = document.createElement('div');
-                    crown.className = 'boss-crown';
-                    crown.innerText = '👑';
-                    node.appendChild(crown);
-                }
-
-                if(!isCompleted && !isActive) {
-                    // locked, mach nichts
-                } else {
-                    node.onclick = () => {
-                        AudioFX.click();
-                        // Simulation eines erfolgreichen Levels für den Test:
-                        if(confirm(`Level ${i} starten? (Simulation: Klicke OK zum Gewinnen)`)) {
-                            if(!state.levels.includes(i)) state.levels.push(i);
-                            state.xp += isBoss ? 100 : 20;
-                            save();
-                            generateMap();
-                        }
-                    };
+                if(isActive || isCompleted) {
+                    node.onclick = () => { AudioFX.click(); gameEngine.start('level', isBoss ? 10 : 5, i); };
                 }
 
                 row.appendChild(node);
@@ -700,55 +624,159 @@
             }
         }
 
-        /* === 6. SETTINGS & MODALS === */
-        function toggleDark() {
-            AudioFX.click();
-            state.dark = !state.dark;
-            document.body.classList.toggle('dark-mode', state.dark);
-            save();
-        }
-
-        function toggleSound() {
-            state.sound = !state.sound;
-            AudioFX.click();
-            save();
-        }
-
-        function openAuth() {
-            AudioFX.click();
-            document.getElementById('auth-modal').classList.add('active');
-            // Check if Firebase Auth is active
-            if(firebase.auth && firebase.auth().currentUser) {
-                document.getElementById('auth-out').style.display = 'none';
-                document.getElementById('auth-in').style.display = 'block';
-                document.getElementById('user-display').innerText = firebase.auth().currentUser.email;
-            }
-        }
-        function closeAuth() {
-            AudioFX.click();
-            document.getElementById('auth-modal').classList.remove('active');
-        }
-
-        function loginGoogle() {
-            if(!firebase.auth) {
-                alert("Firebase ist nicht konfiguriert. Speicher funktioniert lokal!");
-                return;
-            }
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider).then(() => {
-                closeAuth(); openAuth();
-            }).catch(e => alert(e.message));
-        }
-
-        function logout() {
-            if(firebase.auth) firebase.auth().signOut().then(() => {
-                document.getElementById('auth-out').style.display = 'block';
-                document.getElementById('auth-in').style.display = 'none';
+        function renderDict() {
+            const tbody = document.getElementById('dict-body');
+            vocabList.forEach(v => {
+                tbody.innerHTML += `<tr><td style="color:var(--text-main)">${v.la}</td><td>${v.de}</td><td>${v.gen}</td><td style="color:var(--accent)">${v.gen_s}</td><td>${v.stamm}</td></tr>`;
             });
         }
 
-        // Init App
-        window.onload = loadSave;
+        function renderAvatar() {
+            const inv = document.getElementById('inv-grid');
+            inv.innerHTML = '';
+            UNLOCKS.forEach(u => {
+                const unlocked = state.levels.includes(u.lv) || state.levels.length >= u.lv;
+                const equipped = state.items.includes(u.id);
+                
+                // SVG Update
+                const svgItem = document.getElementById(`item-${u.id}`);
+                if(svgItem) svgItem.style.display = equipped ? 'block' : 'none';
+
+                // Grid Update
+                inv.innerHTML += `
+                    <div style="background:var(--bg-base); padding:1rem; border:1px solid ${equipped ? 'var(--accent)' : 'var(--border)'}; border-radius:12px; cursor:${unlocked ? 'pointer' : 'not-allowed'}; opacity:${unlocked ? '1' : '0.5'};" 
+                         onclick="${unlocked ? `toggleItem('${u.id}')` : ''}">
+                        <div style="font-weight:800; color:var(--text-main);">${u.name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">${unlocked ? (equipped ? 'Angezogen' : 'Klicken zum Anziehen') : 'Lv ' + u.lv + ' benötigt'}</div>
+                    </div>`;
+            });
+        }
+
+        function toggleItem(id) {
+            AudioFX.click();
+            if(state.items.includes(id)) state.items = state.items.filter(x => x !== id);
+            else state.items.push(id);
+            save();
+        }
+
+        // === 6. THE GAME ENGINE (Levenshtein & Check) ===
+        const gameEngine = {
+            mode: '', targetLevel: 1, qs: [], idx: 0, score: 0,
+            
+            start(mode, count, lv = 1) {
+                this.mode = mode; this.targetLevel = lv; this.idx = 0; this.score = 0;
+                this.qs = [...vocabList].sort(()=>0.5-Math.random()).slice(0, count);
+                
+                document.getElementById('quiz-mode-title').innerText = mode === 'level' ? `Level ${lv}` : (mode === 'daily' ? 'Tägliches Quiz' : 'Vokabel-Test');
+                document.getElementById('view-quiz').classList.add('active');
+                this.renderQ();
+            },
+
+            renderQ() {
+                if(this.idx >= this.qs.length) return this.finish();
+                const q = this.qs[this.idx];
+                document.getElementById('quiz-question').innerText = q.la;
+                document.getElementById('quiz-input-main').value = '';
+                document.getElementById('quiz-input-gram').value = '';
+                document.getElementById('quiz-feedback').style.display = 'none';
+                document.getElementById('quiz-counter').innerText = `${this.idx + 1}/${this.qs.length}`;
+                document.getElementById('quiz-progress').style.width = `${(this.idx / this.qs.length) * 100}%`;
+                document.getElementById('quiz-input-main').focus();
+            },
+
+            levenshtein(a, b) {
+                const m = [];
+                for(let i=0; i<=b.length; i++) m[i]=[i];
+                for(let j=0; j<=a.length; j++) m[0][j]=j;
+                for(let i=1; i<=b.length; i++) {
+                    for(let j=1; j<=a.length; j++) {
+                        if(b.charAt(i-1) === a.charAt(j-1)) m[i][j] = m[i-1][j-1];
+                        else m[i][j] = Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
+                    }
+                }
+                return m[b.length][a.length];
+            },
+
+            submit() {
+                const q = this.qs[this.idx];
+                const input = document.getElementById('quiz-input-main').value.trim().toLowerCase();
+                const alts = q.de.split(',').map(s=>s.trim().toLowerCase());
+                
+                const isCorrect = alts.some(alt => this.levenshtein(input, alt) <= 2);
+                const fb = document.getElementById('quiz-feedback');
+                fb.style.display = 'block';
+
+                if(isCorrect) {
+                    AudioFX.correct();
+                    this.score++;
+                    fb.style.background = 'rgba(34, 197, 94, 0.1)';
+                    fb.style.color = 'var(--success)';
+                    fb.innerText = 'Richtig!';
+                } else {
+                    AudioFX.wrong();
+                    fb.style.background = 'rgba(239, 68, 68, 0.1)';
+                    fb.style.color = 'var(--danger)';
+                    fb.innerText = `Falsch! Lösung: ${q.de}`;
+                }
+
+                setTimeout(() => { this.idx++; this.renderQ(); }, 1200);
+            },
+
+            finish() {
+                const passed = this.score >= Math.ceil(this.qs.length * 0.6); // 60% Hürde
+                if(passed) {
+                    AudioFX.play(800, 'triangle', 0.5);
+                    const xp = this.mode === 'level' ? (this.targetLevel%10===0?100:20) : 50;
+                    state.xp += xp;
+                    
+                    const today = new Date().toDateString();
+                    if(state.lastDate !== today) { state.streak++; state.lastDate = today; }
+
+                    if(this.mode === 'level' && !state.levels.includes(this.targetLevel)) {
+                        state.levels.push(this.targetLevel);
+                    }
+                    save();
+                    alert(`🎉 Bestanden! ${this.score}/${this.qs.length} richtig. +${xp} XP`);
+                } else {
+                    AudioFX.wrong();
+                    alert(`❌ Durchgefallen. Nur ${this.score}/${this.qs.length} richtig. Versuch es nochmal!`);
+                }
+                nav('levels', document.querySelector('.nav-link')); // Zurück zum Pfad
+                renderPath();
+            }
+        };
+
+        // === 7. FIREBASE & SETTINGS ===
+        function toggleSound() { state.sound = !state.sound; save(); }
+        
+        function openAuth() { 
+            AudioFX.click();
+            document.getElementById('auth-modal').classList.add('active');
+            if(window.firebase && firebase.auth && firebase.auth().currentUser) {
+                document.getElementById('auth-out').style.display = 'none';
+                document.getElementById('auth-in').style.display = 'block';
+                document.getElementById('auth-email-display').innerText = firebase.auth().currentUser.email;
+                document.getElementById('auth-dot').style.background = 'var(--success)';
+                document.getElementById('auth-text').innerText = 'PROFIL';
+            }
+        }
+
+        function loginGoogle() {
+            if(!window.firebase || !firebase.auth) return alert("Speicherung erfolgt lokal. (Firebase nicht konfiguriert)");
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).then(()=>openAuth()).catch(e=>alert(e.message));
+        }
+
+        function logout() {
+            if(window.firebase && firebase.auth) firebase.auth().signOut().then(()=>{
+                document.getElementById('auth-dot').style.background = 'var(--danger)';
+                document.getElementById('auth-text').innerText = 'LOGIN';
+                document.getElementById('auth-modal').classList.remove('active');
+            });
+        }
+
+        // Start
+        window.onload = init;
     </script>
 </body>
 </html>
